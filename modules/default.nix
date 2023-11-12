@@ -5,7 +5,6 @@
 # nixosModules to be exported from the flake
 {
   flake.nixosModules = {
-    # TODO: Add module for caml-crush service
-    # caml-crush = import ./services/caml-crush;
+    caml-crush = import ./services/caml-crush;
   };
 }
