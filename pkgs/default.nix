@@ -4,10 +4,9 @@
 #
 # Packages to be exported from the flake
 {
-  perSystem = _: {
+  perSystem = {pkgs, ...}: {
     packages = {
-      # TODO: Add caml-crush package
-      # caml-crush = pkgs.callPackage ./caml-crush {};
+      caml-crush = pkgs.callPackage ./caml-crush {};
     };
   };
 }
