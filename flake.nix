@@ -34,7 +34,9 @@
       ];
 
       imports = [
+        ./modules
         ./nix
+        ./pkgs
       ];
     };
 }
