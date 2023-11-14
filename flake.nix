@@ -7,8 +7,15 @@
   inputs = {
     # Nixpkgs
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
     flake-root.url = "github:srid/flake-root";
+    devour-flake = {
+      url = "github:srid/devour-flake";
+      flake = false;
+    };
     # Format all the things
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -16,17 +23,10 @@
     };
   };
 
-  outputs = inputs @ {
-    flake-parts,
-    nixpkgs,
-    ...
-  }:
+  outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake
     {
       inherit inputs;
-      specialArgs = {
-        inherit (nixpkgs) lib;
-      };
     } {
       systems = [
         "x86_64-linux"
