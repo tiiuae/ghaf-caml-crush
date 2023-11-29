@@ -40,23 +40,9 @@
   # List of libnames wrappers to generate
   libnames = builtins.attrNames cfg.pkcs11Modules;
 
-  packageWithOverrides = (cfg.package.overrideAttrs
-    (prev: {
-      configureFlags =
-        prev.configureFlags
-        ++ [
-          "--with-libnames=${builtins.concatStringsSep "," libnames}"
-          "--with-client-socket=${cfg.clientSocket}"
-        ]
-        ++ lib.optionals cfg.disableFilter [
-          "--without-filter"
-        ];
-    }))
-  .override {ocamlClient = cfg.enableOcamlClient;};
-
   mkPkcs11ToolWrapper = libname:
     pkgs.writeShellScriptBin "pkcs11-tool-caml-crush-${libname}" ''
-      exec "${pkgs.opensc}/bin/pkcs11-tool" --module "${packageWithOverrides}/lib/caml-crush/libp11client${libname}.so" $@
+      exec "${pkgs.opensc}/bin/pkcs11-tool" --module "${cfg.packageWithOverrides}/lib/caml-crush/libp11client${libname}.so" $@
     '';
 in {
   options.ghaf.services.caml-crush = {
@@ -124,6 +110,44 @@ in {
       description = lib.mdDoc "The package to use for the caml-crush.";
     };
 
+    packageWithOverrides = lib.mkOption {
+      type = lib.types.package;
+      default = (cfg.package.overrideAttrs
+        (prev: {
+          configureFlags =
+            prev.configureFlags
+            ++ [
+              "--with-libnames=${builtins.concatStringsSep "," libnames}"
+              "--with-client-socket=${cfg.clientSocket}"
+            ]
+            ++ lib.optionals cfg.disableFilter [
+              "--without-filter"
+            ];
+        }))
+      .override {ocamlClient = cfg.enableOcamlClient;};
+      defaultText = lib.literalExpression ''
+        (cfg.package.overrideAttrs
+          (prev: {
+            configureFlags =
+              prev.configureFlags
+              ++ [
+                "--with-libnames=${builtins.concatStringsSep "," libnames}"
+                "--with-client-socket=${cfg.clientSocket}"
+              ]
+              ++ lib.optionals cfg.disableFilter [
+                "--without-filter"
+              ];
+          }))
+        .override {ocamlClient = cfg.enableOcamlClient;};
+      '';
+      description = lib.mdDoc ''
+	The package, where overrides from this module's settings have been
+	applied to the derivation.
+
+	Useful if you need to get the library for example.
+      '';
+    };
+
     user = lib.mkOption {
       type = lib.types.str;
       default = defaultUser;
@@ -172,7 +196,7 @@ in {
     systemd.services.caml-crush = {
       enable = true;
       description = "Caml Crush: an OCaml PKCS#11 filtering proxy";
-      path = [packageWithOverrides];
+      path = [cfg.packageWithOverrides];
       serviceConfig = {
         User = cfg.user;
         Group = cfg.group;
@@ -180,7 +204,7 @@ in {
         StandardOutput = "journal";
         StandardError = "journal";
         ExecStart = lib.concatStringsSep " " [
-          "${packageWithOverrides}/bin/pkcs11proxyd"
+          "${cfg.packageWithOverrides}/bin/pkcs11proxyd"
           "-fg"
           "-conf"
           "${pkcs11proxydConf}"
