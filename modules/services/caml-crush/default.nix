@@ -192,13 +192,5 @@ in {
     };
 
     environment.systemPackages = builtins.map mkPkcs11ToolWrapper libnames;
-
-    # Permissions for /dev/tee0
-    # TODO: Create separate group for tee-client, and add user of the
-    #       caml-crush service to that group.
-    # TODO: Possibly move to flake module
-    services.udev.extraRules = ''
-      SUBSYSTEM=="tee",KERNEL=="tee0",GROUP="${cfg.group}"
-    '';
   };
 }
