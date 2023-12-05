@@ -141,10 +141,10 @@ in {
         .override {ocamlClient = cfg.enableOcamlClient;};
       '';
       description = lib.mdDoc ''
-	The package, where overrides from this module's settings have been
-	applied to the derivation.
+        The package, where overrides from this module's settings have been
+        applied to the derivation.
 
-	Useful if you need to get the library for example.
+        Useful if you need to get the library for example.
       '';
     };
 
