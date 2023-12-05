@@ -10,6 +10,8 @@
   autoreconfHook,
   libtirpc,
   rpcsvc-proto,
+  libnames ? ["pkcs11"],
+  clientSocket ? "tcp,192.168.200.100:5657", # FIXME: should be null, and defined in a module, fix when cross-compilation would be fixed
   ocamlClient ? false,
 }: let
   inherit
@@ -37,7 +39,10 @@ in
     preConfigure = ''
       cp Makefile.Unix.in Makefile.in
     '';
-    configureFlags = ["--with-idlgen" "--with-rpcgen"] ++ lib.optional ocamlClient "--with-ocamlclient";
+    configureFlags =
+      ["--with-libnames=${lib.concatStringsSep "," libnames}" "--with-idlgen" "--with-rpcgen"]
+      ++ lib.optional ocamlClient "--with-ocamlclient"
+      ++ lib.optional (clientSocket != null) "--with-client-socket=${clientSocket}";
 
     nativeBuildInputs = [autoreconfHook camlidl coccinelle ocaml findlib ocamlnet camlp4] ++ lib.optional (!ocamlClient) rpcsvc-proto;
 
