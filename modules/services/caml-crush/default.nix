@@ -31,10 +31,19 @@
     then ''libnames = "${libnamesConfig}";''
     else ''filter_config = "${filterConfig}";'';
 
+  protocolAddressType = ''type = "${cfg.server.protocol.type}";'';
+  protocolAddressBind =
+    if cfg.server.protocol.type == "internet"
+    then ''bind = "${cfg.server.protocol.address}";''
+    else if cfg.server.protocol.type == "local"
+    then ''path = "${cfg.server.protocol.address}";''
+    else abort "Invalid server protocol type [${cfg.server.protocol.type}]";
   # Generate the main config file
   pkcs11proxydConf = pkgs.substituteAll {
     src = ./pkcs11proxyd.conf;
     inherit processor;
+    inherit protocolAddressType;
+    inherit protocolAddressBind;
   };
 
   # List of libnames wrappers to generate
@@ -47,6 +56,38 @@
 in {
   options.ghaf.services.caml-crush = {
     enable = lib.mkEnableOption "caml-crush";
+
+    server = {
+      protocol = {
+        type = lib.mkOption {
+          type = lib.types.str;
+          default = "internet";
+          example = "internet";
+          description = lib.mdDoc ''
+            Server socket type. You can specify either UNIX domain socket or TCP socket.
+
+            Default is TCP socket.
+
+            Example of TCP socket: `internet`
+            Example of UNIX domain socket: `local`
+          '';
+        };
+
+        address = lib.mkOption {
+          type = lib.types.str;
+          default = "127.0.0.1:4444";
+          example = "192.168.0.1:1202";
+          description = lib.mdDoc ''
+            Server address configuration. You can specicy either UNIX domain socket or TCP socket address.
+
+            Default is `127.0.0.1:4444`.
+
+            Example of TCP socket: `192.168.0.1:1202`
+            Example of UNIX domain socket: `/var/run/pkcs11proxyd.socket`
+          '';
+        };
+      };
+    };
 
     clientSocket = lib.mkOption {
       type = lib.types.str;
