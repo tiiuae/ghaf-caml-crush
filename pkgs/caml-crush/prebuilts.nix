@@ -5,6 +5,7 @@
   stdenv,
   autoPatchelfHook,
   libtirpc,
+  ... # skip parameters FIXME: assert them via IFD
 }: let
   prebuilts = {
     x86_64-linux = ../../prebuilt/caml-crush-x86_64-linux.tar.gz;
@@ -13,8 +14,8 @@
 in
   stdenv.mkDerivation {
     name = "caml-crush-prebuilt";
-    #  src = prebuilts.${stdenv.hostPlatform.system};
-    dontUnpack = 1;
+    phases = [ "installPhase" "fixupPhase" ];
+    configureFlags = [];
     nativeBuildInputs = [autoPatchelfHook];
     buildInputs = [libtirpc];
     installPhase = ''
