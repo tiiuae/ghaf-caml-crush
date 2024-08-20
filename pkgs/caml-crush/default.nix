@@ -4,8 +4,10 @@
 {
   stdenv,
   lib,
+  pkgs,
   fetchFromGitHub,
   ocamlPackages,
+  callPackage,
   coccinelle,
   autoreconfHook,
   libtirpc,
@@ -20,6 +22,12 @@
     camlp4
     config-file
     ;
+    
+  # The old coccinelle is needed for ghaf caml crush library
+  coccinelle = callPackage ../coccinelle {};
+  # Fix no ocamlnet after ocaml 5.0 error
+  # choose the ocaml version you want to use
+  ocamlPackages = pkgs.ocaml-ng.ocamlPackages_4_14;
   ocamlnet = ocamlPackages.ocamlnet.overrideAttrs (_old: {
     # Fix broken ocamlrpcgen
     dontStrip = true;
