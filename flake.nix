@@ -6,7 +6,8 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:tiiuae/nixpkgs/nixos-unstable-xdg-ffado-2"; #"flake:mylocalnixpkgs"; #
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -27,7 +28,9 @@
     flake-parts.lib.mkFlake
     {
       inherit inputs;
-    } {
+    } 
+    
+    {
       systems = [
         "x86_64-linux"
         "aarch64-linux"

@@ -6,6 +6,7 @@
 {
   perSystem = {pkgs, ...}: {
     packages = {
+      coccinelle = pkgs.callPackage ./coccinelle {};
       caml-crush = pkgs.callPackage ./caml-crush {};
     };
   };
