@@ -16,7 +16,7 @@
       inherit (config.flake-root) projectRootFile;
 
       programs = {
-        alejandra.enable = true; # nix formatter https://github.com/kamadorueda/alejandra
+        alejandra.enable = true; # lints nix code
         deadnix.enable = true; # removes dead nix code https://github.com/astro/deadnix
         statix.enable = true; # prevents use of nix anti-patterns https://github.com/nerdypepper/statix
         shellcheck.enable = true; # lints shell scripts https://github.com/koalaman/shellcheck

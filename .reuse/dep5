@@ -5,4 +5,4 @@ Source: https://github.com/tiiuae/ghaf-caml-crush
 
 Copyright: 2023 Technology Innovation Institute (TII) <https://github.com/tiiuae/>
 License: Apache-2.0
-Files: *.lock *.json docs/*.svg *.conf
+Files: *.lock *.json docs/*.svg *.conf .github/*

@@ -16,6 +16,12 @@
       url = "github:srid/devour-flake";
       flake = false;
     };
+    devshell = {
+      url = "github:numtide/devshell";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+      };
+    };
     # Format all the things
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
@@ -27,7 +33,8 @@
     flake-parts.lib.mkFlake
     {
       inherit inputs;
-    } {
+    }
+    {
       systems = [
         "x86_64-linux"
         "aarch64-linux"

@@ -18,7 +18,9 @@
   libnamesConfig = lib.concatStrings (lib.mapAttrsToList (a: b: "${a}:${b};") cfg.pkcs11Modules);
 
   # Used when caml-crush is built with filter
-  filterModules = lib.concatStringsSep ", " (lib.mapAttrsToList (a: b: ''("${a}", "${b}")'') cfg.pkcs11Modules);
+  filterModules = lib.concatStringsSep ", " (
+    lib.mapAttrsToList (a: b: ''("${a}", "${b}")'') cfg.pkcs11Modules
+  );
   filterConfig = pkgs.substituteAll {
     src = ./filter.conf;
     inherit (cfg) filterDebugLevel filterExtraConfig;
@@ -153,8 +155,8 @@ in {
 
     packageWithOverrides = lib.mkOption {
       type = lib.types.package;
-      default = (cfg.package.overrideAttrs
-        (prev: {
+      default =
+        (cfg.package.overrideAttrs (prev: {
           configureFlags =
             prev.configureFlags
             ++ [
@@ -165,7 +167,8 @@ in {
               "--without-filter"
             ];
         }))
-      .override {ocamlClient = cfg.enableOcamlClient;};
+        .override
+        {ocamlClient = cfg.enableOcamlClient;};
       defaultText = lib.literalExpression ''
         (cfg.package.overrideAttrs
           (prev: {
