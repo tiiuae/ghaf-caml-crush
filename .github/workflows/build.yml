@@ -22,6 +22,11 @@ jobs:
       authorized_user: ${{ steps.check-authorized-user.outputs.authorized_user}}
     environment: 'internal-build-workflow'
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Check identity
         id: check-authorized-user
         shell: bash
@@ -46,6 +51,11 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ needs.check-identity.outputs.authorized_user == 'True' }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Authorize internal
         run: echo "authorized"
 
@@ -58,6 +68,11 @@ jobs:
             github.event.pull_request.head.repo.full_name != github.repository &&
             'external-build-workflow' ) || ( 'internal-build-workflow' ) }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Authorize external
         run: echo "authorized"
 
@@ -71,6 +86,11 @@ jobs:
       (needs.authorize-external.result == 'success' || needs.authorize-external.result == 'skipped') &&
        !(needs.authorize-internal.result == 'skipped' && needs.authorize-external.result == 'skipped')
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Authorize
         run: echo "authorized"
 
@@ -99,6 +119,11 @@ jobs:
       group: ${{ github.workflow }}.${{ github.event.pull_request.number || github.ref }}.${{ matrix.arch }}.${{ matrix.target }}
       cancel-in-progress: true
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Maximize space available on rootfs
         # Why not use https://github.com/easimon/maximize-build-space directly?
         # The reason is: we want to maximize the space on rootfs, since that's
@@ -124,11 +149,11 @@ jobs:
           echo "Available storage after cleanup:"
           df -h
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           ref: ${{ github.event.pull_request.head.sha || github.ref }}
       - name: Install nix
-        uses: cachix/install-nix-action@v22
+        uses: cachix/install-nix-action@6ed004b9ccb68dbc28e7c85bee15fa93dbd214ac # v22
         with:
           extra_nix_config: |
             trusted-public-keys = ghaf-dev.cachix.org-1:S3M8x3no8LFQPBfHw1jl6nmP8A7cVWKntoMKN3IsEQY= cache.vedenemo.dev:RGHheQnb6rXGK5v9gexJZ8iWTPX6OcSeS56YeXYzOcg= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
