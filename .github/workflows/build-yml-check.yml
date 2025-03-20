@@ -13,13 +13,18 @@ jobs:
     outputs:
       result: ${{ steps.set-output.outputs.result }}
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
           fetch-depth: 2
       - name: Check if build.yml is modified
         id: build-yml-changed
-        uses: tj-actions/changed-files@v39
+        uses: tj-actions/changed-files@48566bbcc22ceb7c5809ebdd27377309f2c3de8c # v39.0.0
         with:
           files: .github/workflows/build.yml
       - name: Set output
